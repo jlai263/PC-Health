@@ -2,6 +2,20 @@
 
 A comprehensive PC health monitoring solution that leverages SRE best practices to monitor and alert on system health metrics.
 
+## Screenshots
+
+### Dashboard Overview
+![Dashboard Overview](docs/images/dashboard.png)
+*The main dashboard showing real-time system metrics including CPU, Memory, and Disk usage.*
+
+### System Metrics
+![System Metrics](docs/images/metrics.png)
+*Detailed view of system metrics with historical trends.*
+
+### Alert Management
+![Alert Management](docs/images/alerts.png)
+*PagerDuty integration showing active alerts and incident management.*
+
 ## Features
 
 - Real-time monitoring of critical system metrics:

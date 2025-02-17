@@ -35,11 +35,23 @@ A comprehensive PC health monitoring solution that leverages SRE best practices 
 ## Prerequisites
 
 - Python 3.8+
-- Ansible 2.9+
 - PagerDuty account (for alerts)
 - Git
 
-## Quick Start
+### Python Dependencies
+```
+psutil>=5.9.0     # System metrics
+pdpyras>=4.5.1    # PagerDuty integration
+fastapi>=0.104.0  # API server
+uvicorn>=0.24.0   # ASGI server
+pyyaml>=6.0.1     # Configuration
+SQLAlchemy>=2.0.23  # Database ORM
+prometheus-client>=0.19.0  # Metrics
+```
+
+## Installation
+
+### Quick Start (Manual Installation)
 
 1. Clone the repository:
 ```bash
@@ -63,19 +75,52 @@ cp config/config.example.yaml config/config.yaml
 python src/monitor.py
 ```
 
+### Automated Deployment (Using Ansible)
+
+1. Install Ansible:
+```bash
+pip install ansible
+```
+
+2. Create an inventory file (hosts.yml):
+```yaml
+all:
+  hosts:
+    your_machine:
+      ansible_host: your_ip
+      ansible_user: your_username
+```
+
+3. Run the Ansible playbook:
+```bash
+ansible-playbook -i hosts.yml ansible/deploy.yml
+```
+
+This will:
+- Install all dependencies
+- Set up the service as a systemd unit
+- Configure automatic startup
+- Set proper permissions and directories
+
 ## Project Structure
 
 ```
 PC-Health/
-├── ansible/                 # Ansible playbooks for deployment
+├── ansible/                 # Ansible deployment files
+│   ├── deploy.yml          # Main deployment playbook
+│   └── templates/          # Service templates
 ├── config/                 # Configuration files
+│   ├── config.yaml        # Your configuration
+│   └── config.example.yaml # Example configuration
 ├── src/                    # Source code
 │   ├── collectors/        # Metric collection modules
 │   ├── alerting/         # Alert management
 │   ├── api/              # API endpoints
 │   └── dashboard/        # Web dashboard
+├── docs/                  # Documentation
+│   └── images/           # Screenshots and images
 ├── tests/                 # Test suite
-└── docs/                 # Documentation
+└── requirements.txt       # Python dependencies
 ```
 
 ## Configuration
@@ -91,12 +136,34 @@ metrics:
     warning_threshold: 85
     critical_threshold: 95
   disk:
-    warning_threshold: 85
-    critical_threshold: 90
+    warning_threshold: 90
+    critical_threshold: 95
 
 pagerduty:
   api_key: YOUR_API_KEY
   service_id: YOUR_SERVICE_ID
+
+dashboard:
+  enabled: true
+  host: "127.0.0.1"
+  port: 8000
+```
+
+## Development
+
+For development work:
+```bash
+# Install development dependencies
+pip install -r requirements.txt
+
+# Run tests
+pytest
+
+# Format code
+black .
+
+# Lint code
+pylint src/
 ```
 
 ## Contributing
@@ -113,5 +180,6 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 - PagerDuty API
 - psutil library
+- FastAPI framework
 - Ansible community
  

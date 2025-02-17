@@ -1,0 +1,77 @@
+---
+- name: Deploy PC Health Monitor
+  hosts: all
+  become: yes
+  vars:
+    app_user: "{{ ansible_user }}"
+    app_group: "{{ ansible_user }}"
+    install_dir: "/opt/pc-health-monitor"
+    config_dir: "/etc/pc-health-monitor"
+    log_dir: "/var/log/pc-health-monitor"
+    service_name: "pc-health-monitor"
+    python_version: "python3"
+    
+  tasks:
+    - name: Install system dependencies
+      package:
+        name:
+          - "{{ python_version }}"
+          - "{{ python_version }}-pip"
+          - "{{ python_version }}-dev"
+          - git
+        state: present
+        
+    - name: Create application directories
+      file:
+        path: "{{ item }}"
+        state: directory
+        owner: "{{ app_user }}"
+        group: "{{ app_group }}"
+        mode: '0755'
+      with_items:
+        - "{{ install_dir }}"
+        - "{{ config_dir }}"
+        - "{{ log_dir }}"
+        
+    - name: Clone/update repository
+      git:
+        repo: "https://github.com/yourusername/PC-Health.git"
+        dest: "{{ install_dir }}"
+        version: main
+        force: yes
+      become_user: "{{ app_user }}"
+      
+    - name: Install Python dependencies
+      pip:
+        requirements: "{{ install_dir }}/requirements.txt"
+        executable: pip3
+        state: present
+        
+    - name: Copy configuration file
+      copy:
+        src: "{{ install_dir }}/config/config.example.yaml"
+        dest: "{{ config_dir }}/config.yaml"
+        owner: "{{ app_user }}"
+        group: "{{ app_group }}"
+        mode: '0644'
+        force: no
+        
+    - name: Create systemd service
+      template:
+        src: templates/pc-health-monitor.service.j2
+        dest: "/etc/systemd/system/{{ service_name }}.service"
+        mode: '0644'
+      notify: Restart service
+      
+    - name: Enable and start service
+      systemd:
+        name: "{{ service_name }}"
+        enabled: yes
+        state: started
+        daemon_reload: yes
+        
+  handlers:
+    - name: Restart service
+      systemd:
+        name: "{{ service_name }}"
+        state: restarted 

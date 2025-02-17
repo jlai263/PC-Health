@@ -1,0 +1,16 @@
+[Unit]
+Description=PC Health Monitor
+After=network.target
+
+[Service]
+Type=simple
+User={{ app_user }}
+Group={{ app_group }}
+WorkingDirectory={{ install_dir }}
+Environment=PYTHONPATH={{ install_dir }}
+ExecStart={{ python_version }} {{ install_dir }}/src/monitor.py --config {{ config_dir }}/config.yaml
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target 

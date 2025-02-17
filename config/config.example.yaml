@@ -1,0 +1,104 @@
+# PC Health Monitor Configuration
+
+# System Metrics Configuration
+metrics:
+  # CPU monitoring settings
+  cpu:
+    enabled: true
+    warning_threshold: 80  # Percentage
+    critical_threshold: 90  # Percentage
+    check_interval: 60  # Seconds
+    temperature_warning: 70  # Celsius
+    temperature_critical: 85  # Celsius
+
+  # Memory monitoring settings
+  memory:
+    enabled: true
+    warning_threshold: 85  # Percentage
+    critical_threshold: 95  # Percentage
+    check_interval: 60  # Seconds
+    swap_warning_threshold: 50  # Percentage
+    swap_critical_threshold: 75  # Percentage
+
+  # Disk monitoring settings
+  disk:
+    enabled: true
+    warning_threshold: 85  # Percentage
+    critical_threshold: 90  # Percentage
+    check_interval: 300  # Seconds
+    monitored_paths:
+      - "C:/"  # Windows system drive
+      - "D:/"  # Optional additional drive
+
+  # Network monitoring settings
+  network:
+    enabled: true
+    check_interval: 60  # Seconds
+    ping_targets:
+      - "8.8.8.8"  # Google DNS
+      - "1.1.1.1"  # Cloudflare DNS
+    latency_warning: 100  # ms
+    latency_critical: 200  # ms
+
+# Process monitoring
+processes:
+  enabled: true
+  check_interval: 120  # Seconds
+  watch_list:
+    - name: "chrome"
+      max_memory_percent: 30
+      max_cpu_percent: 50
+    - name: "explorer"
+      max_memory_percent: 15
+      max_cpu_percent: 25
+
+# Alert Configuration
+alerting:
+  pagerduty:
+    enabled: true
+    api_key: "YOUR_PAGERDUTY_API_KEY"
+    service_id: "YOUR_SERVICE_ID"
+    severity_mapping:
+      warning: "warning"
+      critical: "critical"
+  
+  email:
+    enabled: false
+    smtp_server: "smtp.gmail.com"
+    smtp_port: 587
+    username: "your-email@gmail.com"
+    password: "your-app-specific-password"
+    recipients:
+      - "admin@example.com"
+
+# API Server Configuration
+api:
+  enabled: true
+  host: "127.0.0.1"
+  port: 8001
+
+# Dashboard Configuration
+dashboard:
+  enabled: true
+  host: "127.0.0.1"
+  port: 8000
+  refresh_interval: 5  # Seconds
+
+# Database Configuration
+database:
+  type: "sqlite"  # sqlite, postgresql
+  path: "data/metrics.db"  # For SQLite
+  retention_days: 30  # How long to keep historical data
+
+# Logging Configuration
+logging:
+  level: "INFO"  # DEBUG, INFO, WARNING, ERROR, CRITICAL
+  file: "logs/pc_health.log"
+  max_size: 10  # MB
+  backup_count: 5
+
+# Feature Flags
+features:
+  historical_tracking: true
+  prometheus_export: true
+  api_server: true 
